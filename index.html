@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Quadratic Solver Pro</title>
+<style>
+    /* یہ گرے بیک گراؤنڈ ہے */
+    body {
+        background: #9ba0ab;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .container {
+        display: flex;
+        gap: 40px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+    }
+
+    .left {
+        width: 300px;
+        text-align: center;
+    }
+
+    .right {
+        width: 330px;
+        text-align: center;
+    }
+
+    .input-group {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        margin: 15px 0;
+        flex-wrap: wrap;
+    }
+
+    .input-group label {
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .input-group input {
+        width: 65px;
+        padding: 10px;
+        font-size: 18px;
+        text-align: center;
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        transition: 0.3s;
+    }
+
+    .input-group input:focus {
+        border-color: #2c3e50;
+        outline: none;
+        background: #f8f9fc;
+    }
+
+    button {
+        background: #2c3e50;
+        color: white;
+        padding: 14px 40px;
+        font-size: 20px;
+        font-weight: bold;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        margin: 15px 0;
+        width: 100%;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        background: #1a252f;
+        transform: scale(1.02);
+    }
+
+    .equation-box {
+        background: #f0f2f5;
+        padding: 12px;
+        border-radius: 12px;
+        font-size: 22px;
+        font-weight: bold;
+        color: #1e1e2f;
+        margin: 10px 0;
+    }
+
+    .result-box {
+        background: #e8ecf1;
+        padding: 15px;
+        border-radius: 12px;
+        font-weight: bold;
+        min-height: 30px;
+        font-size: 18px;
+    }
+
+    canvas {
+        background: #f8f9fc;
+        border-radius: 15px;
+        border: 1px solid #d1d5db;
+        width: 100%;
+        height: auto;
+        margin-top: 10px;
+    }
+
+    h2, h3 {
+        margin: 0 0 10px 0;
+        color: #1e1e2f;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- بائیں طرف: کیلکولیٹر -->
+    <div class="card left">
+        <h2>🧮 Solve: ax² + bx + c</h2>
+        <div class="input-group">
+            <label>a =</label> <input type="number" id="a" step="any" value="1">
+            <label>b =</label> <input type="number" id="b" step="any" value="-4">
+            <label>c =</label> <input type="number" id="c" step="any" value="3">
+        </div>
+
+        <div class="equation-box" id="equationDisplay">x² - 4x + 3 = 0</div>
+
+        <button onclick="solveEquation()">✨ Solve</button>
+
+        <div class="result-box" id="resultDisplay">x₁ = 3.00 , x₂ = 1.00</div>
+    </div>
+
+    <!-- دائیں طرف: گراف (Diagram) -->
+    <div class="card right">
+        <h3>📈 Parabola Graph</h3>
+        <canvas id="graphCanvas" width="300" height="300"></canvas>
+        <p style="font-size:12px; color:#666; margin:5px 0 0;">Red & Blue dots are the roots (x₁, x₂)</p>
+    </div>
+
+</div>
+
+<script>
+// یہ فنکشن solve بٹن دبانے پر چلے گا
+function solveEquation() {
+    // 1. اعداد پڑھیں
+    let a = parseFloat(document.getElementById('a').value);
+    let b = parseFloat(document.getElementById('b').value);
+    let c = parseFloat(document.getElementById('c').value);
+
+    // 2. چیک کریں
+    if (isNaN(a) || isNaN(b) || isNaN(c)) {
+        document.getElementById('resultDisplay').innerText = "❌ Please enter valid numbers!";
+        document.getElementById('equationDisplay').innerText = "Invalid Input";
+        drawGraph(0, 0, 0);
+        return;
+    }
+    if (a === 0) {
+        document.getElementById('resultDisplay').innerText = "❌ 'a' cannot be zero!";
+        document.getElementById('equationDisplay').innerText = "Not a quadratic";
+        drawGraph(0, 0, 0);
+        return;
+    }
+
+    // 3. مساوات کو خوبصورت بنائیں (مثال: 1x² - 4x + 3 = 0)
+    let eq = "";
+    if (a === 1) eq = "x²";
+    else if (a === -1) eq = "-x²";
+    else eq = a + "x²";
+
+    if (b > 0) eq += " + " + b + "x";
+    else if (b < 0) eq += " - " + Math.abs(b) + "x";
+
+    if (c > 0) eq += " + " + c;
+    else if (c < 0) eq += " - " + Math.abs(c);
+    eq += " = 0";
+    document.getElementById('equationDisplay').innerText = eq;
+
+    // 4. ریاضی حل کریں (ڈسکریمیننٹ)
+    let d = (b * b) - (4 * a * c);
+    let resultText = "";
+
+    if (d < 0) {
+        resultText = "❌ No Real Roots (D = " + d + ")";
+    } else if (d === 0) {
+        let x = (-b) / (2 * a);
+        resultText = "✅ Double Root: x = " + x.toFixed(2);
+    } else {
+        let sqrtD = Math.sqrt(d);
+        let x1 = (-b + sqrtD) / (2 * a);
+        let x2 = (-b - sqrtD) / (2 * a);
+        resultText = "✅ x₁ = " + x1.toFixed(2) + " , x₂ = " + x2.toFixed(2);
+    }
+    document.getElementById('resultDisplay').innerText = resultText;
+
+    // 5. گراف بنائیں
+    drawGraph(a, b, c);
+}
+
+// یہ فنکشن کینوس (Canvas) پر گراف بناتا ہے
+function drawGraph(a, b, c) {
+    let canvas = document.getElementById('graphCanvas');
+    let ctx = canvas.getContext('2d');
+    let W = 300, H = 300;
+    ctx.clearRect(0, 0, W, H);
+
+    // پس منظر
+    ctx.fillStyle = "#f8f9fc";
+    ctx.fillRect(0, 0, W, H);
+
+    let scale = 25; // 1 عدد = 25 پکسل
+    let cx = W / 2; // مرکز X
+    let cy = H / 2; // مرکز Y
+
+    // گرڈ لائنیں (Grid lines)
+    ctx.strokeStyle = "#d1d5db";
+    ctx.lineWidth = 1;
+    for (let i = -6; i <= 6; i++) {
+        if (i === 0) continue;
+        // عمودی (Vertical)
+        let xPos = cx + i * scale;
+        ctx.beginPath();
+        ctx.moveTo(xPos, 0);
+        ctx.lineTo(xPos, H);
+        ctx.stroke();
+        // افقی (Horizontal)
+        let yPos = cy - i * scale;
+        ctx.beginPath();
+        ctx.moveTo(0, yPos);
+        ctx.lineTo(W, yPos);
+        ctx.stroke();
+    }
+
+    // مرکزی محور (Axes)
+    ctx.strokeStyle = "#2c3e50";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, cy);
+    ctx.lineTo(W, cy);
+    ctx.moveTo(cx, 0);
+    ctx.lineTo(cx, H);
+    ctx.stroke();
+
+    // O, X, Y کے لیبل
+    ctx.fillStyle = "#2c3e50";
+    ctx.font = "12px Arial";
+    ctx.fillText("O", cx + 6, cy - 6);
+    ctx.fillText("x", W - 15, cy - 8);
+    ctx.fillText("y", cx + 8, 15);
+
+    // اگر a=0 اور b=0 اور c=0 ہے تو کوئی گراف نہ بنے
+    if (a === 0 && b === 0 && c === 0) {
+        ctx.fillStyle = "#888";
+        ctx.font = "14px Arial";
+        ctx.fillText("No Data", 120, 160);
+        return;
+    }
+
+    // پیرابولا (Curve) بنائیں
+    ctx.strokeStyle = "#2c3e50";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    let firstPoint = true;
+    for (let x = -6.5; x <= 6.5; x += 0.05) {
+        let y = a * x * x + b * x + c;
+        let sx = cx + x * scale;
+        let sy = cy - y * scale;
+
+        // اگر گراف بہت اوپر یا نیچے چلا جائے تو اسے روکیں
+        if (sy < -100 || sy > 400) {
+            firstPoint = true;
+            continue;
+        }
+        if (firstPoint) {
+            ctx.moveTo(sx, sy);
+            firstPoint = false;
+        } else {
+            ctx.lineTo(sx, sy);
+        }
+    }
+    ctx.stroke();
+
+    // جڑوں (Roots) کو گراف پر دکھائیں
+    let d = (b * b) - (4 * a * c);
+    if (a !== 0 && d >= 0) {
+        let sqrtD = Math.sqrt(d);
+        let x1 = (-b + sqrtD) / (2 * a);
+        let x2 = (-b - sqrtD) / (2 * a);
+
+        // x1 کے لیے سرخ نقطہ
+        let sx1 = cx + x1 * scale;
+        if (sx1 > 10 && sx1 < W - 10) {
+            ctx.shadowColor = "white";
+            ctx.shadowBlur = 6;
+            ctx.fillStyle = "#e74c3c";
+            ctx.beginPath();
+            ctx.arc(sx1, cy, 6, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = "#e74c3c";
+            ctx.font = "bold 13px Arial";
+            ctx.fillText("x₁", sx1 - 12, cy - 15);
+        }
+
+        // x2 کے لیے نیلا نقطہ
+        if (Math.abs(x1 - x2) > 0.01) {
+            let sx2 = cx + x2 * scale;
+            if (sx2 > 10 && sx2 < W - 10) {
+                ctx.shadowColor = "white";
+                ctx.shadowBlur = 6;
+                ctx.fillStyle = "#2980b9";
+                ctx.beginPath();
+                ctx.arc(sx2, cy, 6, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = "#2980b9";
+                ctx.font = "bold 13px Arial";
+                ctx.fillText("x₂", sx2 - 12, cy - 15);
+            }
+        }
+    }
+}
+
+// جب صفحہ پہلی بار لوڈ ہو تو ڈیفالٹ گراف دکھائیں (a=1, b=-4, c=3)
+window.onload = function() {
+    // پہلے سے ڈیفالٹ ویلیوز سیٹ ہیں، بس solve کال کریں
+    solveEquation();
+};
+</script>
+
+</body>
+</html>
