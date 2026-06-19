@@ -1,344 +1,653 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Quadratic Solver Pro</title>
-<style>
-    /* یہ گرے بیک گراؤنڈ ہے */
-    body {
-        background: #9ba0ab;
-        font-family: 'Segoe UI', Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        margin: 0;
-        padding: 20px;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MathStudio | Quadratic Solver</title>
+    <style>
+        /* ----- Global Reset & Font ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    .container {
-        display: flex;
-        gap: 40px;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
+        body {
+            background: #f4f6f9;
+            color: #1e1e2f;
+            line-height: 1.7;
+        }
 
-    .card {
-        background: white;
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.25);
-    }
+        /* ----- Navbar (Sticky) ----- */
+        .navbar {
+            background: #1e1e2f;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
 
-    .left {
-        width: 300px;
-        text-align: center;
-    }
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .logo span {
+            color: #6c63ff;
+        }
 
-    .right {
-        width: 330px;
-        text-align: center;
-    }
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            color: #ddd;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+            font-size: 16px;
+        }
+        .nav-links a:hover {
+            color: #6c63ff;
+        }
 
-    .input-group {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 5px;
-        margin: 15px 0;
-        flex-wrap: wrap;
-    }
+        /* ----- Hero Section ----- */
+        .hero {
+            background: linear-gradient(135deg, #1e1e2f 0%, #2d2b55 100%);
+            color: #fff;
+            text-align: center;
+            padding: 80px 20px 60px;
+        }
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+        .hero h1 span {
+            color: #ffd700;
+        }
+        .hero p {
+            font-size: 20px;
+            max-width: 600px;
+            margin: 0 auto 20px;
+            opacity: 0.9;
+        }
+        .hero .btn-hero {
+            background: #6c63ff;
+            color: #fff;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .hero .btn-hero:hover {
+            background: #4a42c4;
+            transform: scale(1.03);
+        }
 
-    .input-group label {
-        font-weight: bold;
-        font-size: 18px;
-    }
+        /* ----- Container ----- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
 
-    .input-group input {
-        width: 65px;
-        padding: 10px;
-        font-size: 18px;
-        text-align: center;
-        border: 2px solid #ccc;
-        border-radius: 10px;
-        transition: 0.3s;
-    }
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            color: #1e1e2f;
+        }
+        .section-title span {
+            border-bottom: 4px solid #6c63ff;
+            padding-bottom: 10px;
+        }
 
-    .input-group input:focus {
-        border-color: #2c3e50;
-        outline: none;
-        background: #f8f9fc;
-    }
+        /* ----- Solver Wrapper ----- */
+        .solver-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
 
-    button {
-        background: #2c3e50;
-        color: white;
-        padding: 14px 40px;
-        font-size: 20px;
-        font-weight: bold;
-        border: none;
-        border-radius: 50px;
-        cursor: pointer;
-        margin: 15px 0;
-        width: 100%;
-        transition: 0.2s;
-    }
+        .card {
+            background: #fff;
+            padding: 35px 30px;
+            border-radius: 28px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.07);
+            width: 440px;
+            flex-shrink: 0;
+        }
 
-    button:hover {
-        background: #1a252f;
-        transform: scale(1.02);
-    }
+        .card h2 {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
 
-    .equation-box {
-        background: #f0f2f5;
-        padding: 12px;
-        border-radius: 12px;
-        font-size: 22px;
-        font-weight: bold;
-        color: #1e1e2f;
-        margin: 10px 0;
-    }
+        .input-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        .input-group label {
+            font-weight: 600;
+            font-size: 18px;
+            width: 20px;
+        }
+        .input-group input {
+            width: 80px;
+            padding: 10px;
+            font-size: 18px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            transition: 0.3s;
+            background: #fafafa;
+        }
+        .input-group input:focus {
+            border-color: #6c63ff;
+            outline: none;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.1);
+        }
 
-    .result-box {
-        background: #e8ecf1;
-        padding: 15px;
-        border-radius: 12px;
-        font-weight: bold;
-        min-height: 30px;
-        font-size: 18px;
-    }
+        /* ----- نئے ڈسپلے باکس (Live Equation & Formula) ----- */
+        .display-area {
+            background: #f0f2f7;
+            border-radius: 16px;
+            padding: 16px 14px;
+            margin: 18px 0 12px;
+            text-align: center;
+        }
 
-    canvas {
-        background: #f8f9fc;
-        border-radius: 15px;
-        border: 1px solid #d1d5db;
-        width: 100%;
-        height: auto;
-        margin-top: 10px;
-    }
+        .equation-box {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e1e2f;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #ccc;
+        }
 
-    h2, h3 {
-        margin: 0 0 10px 0;
-        color: #1e1e2f;
-    }
-</style>
+        .formula-box {
+            font-size: 18px;
+            font-weight: 500;
+            color: #2d2b55;
+            padding-top: 8px;
+            font-family: 'Courier New', monospace;
+            background: #e6e9f0;
+            border-radius: 10px;
+            padding: 8px 10px;
+            margin-top: 8px;
+        }
+        .formula-box span {
+            color: #6c63ff;
+            font-weight: 700;
+        }
+
+        .btn-solve {
+            background: #6c63ff;
+            color: #fff;
+            border: none;
+            padding: 14px 0;
+            width: 100%;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin: 10px 0 15px;
+        }
+        .btn-solve:hover {
+            background: #4a42c4;
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(108, 99, 255, 0.3);
+        }
+
+        .result-box {
+            background: #f8f9fc;
+            padding: 16px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 18px;
+            text-align: center;
+            min-height: 56px;
+            border-left: 4px solid #6c63ff;
+        }
+
+        /* ----- Graph Box ----- */
+        .graph-wrapper {
+            background: #fff;
+            padding: 25px 20px;
+            border-radius: 28px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.07);
+            text-align: center;
+            flex: 1;
+            min-width: 300px;
+        }
+        .graph-wrapper h3 {
+            font-size: 22px;
+            margin-bottom: 12px;
+            color: #1e1e2f;
+        }
+        canvas {
+            background: #fafbfc;
+            border-radius: 16px;
+            border: 1px solid #eaeef2;
+            width: 100%;
+            height: auto;
+            max-width: 420px;
+        }
+
+        /* ----- About Section ----- */
+        .about-grid {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .about-card {
+            background: #fff;
+            padding: 30px 25px;
+            border-radius: 24px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.04);
+            flex: 1;
+            min-width: 220px;
+            text-align: center;
+            border-top: 5px solid #6c63ff;
+            transition: 0.3s;
+        }
+        .about-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 36px rgba(0,0,0,0.07);
+        }
+        .about-card h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: #1e1e2f;
+        }
+        .about-card p {
+            color: #555;
+            font-size: 15px;
+        }
+
+        /* ----- Footer ----- */
+        footer {
+            background: #1e1e2f;
+            color: #aaa;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 40px;
+            border-top: 1px solid #333;
+        }
+        footer a {
+            color: #6c63ff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ----- Responsive ----- */
+        @media (max-width: 850px) {
+            .solver-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+            .card {
+                width: 100%;
+                max-width: 460px;
+            }
+            .graph-wrapper {
+                width: 100%;
+            }
+            .navbar {
+                flex-direction: column;
+                gap: 14px;
+                padding: 16px 20px;
+            }
+            .hero h1 {
+                font-size: 34px;
+            }
+            .hero p {
+                font-size: 18px;
+            }
+            .section-title {
+                font-size: 28px;
+            }
+            .formula-box {
+                font-size: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<div class="container">
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar">
+    <div class="logo">Math<span>Studio</span></div>
+    <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#solver">Solver</a>
+        <a href="#about">About</a>
+        <a href="https://github.com/zainabqureshizainabqureshi019/Quadratic_Solver" target="_blank">GitHub</a>
+    </div>
+</nav>
 
-    <!-- بائیں طرف: کیلکولیٹر -->
-    <div class="card left">
-        <h2>🧮 Solve: ax² + bx + c</h2>
-        <div class="input-group">
-            <label>a =</label> <input type="number" id="a" step="any" value="1">
-            <label>b =</label> <input type="number" id="b" step="any" value="-4">
-            <label>c =</label> <input type="number" id="c" step="any" value="3">
+<!-- ===== HERO ===== -->
+<section id="home" class="hero">
+    <h1>Turn Math into <span>Magic</span></h1>
+    <p>Solve any quadratic equation and see the formula live. Just type the values!</p>
+    <a href="#solver" class="btn-hero">🚀 Try the Solver</a>
+</section>
+
+<!-- ===== SOLVER ===== -->
+<section id="solver" class="container">
+    <h2 class="section-title"><span>📐 Quadratic Solver</span></h2>
+    <div class="solver-wrapper">
+
+        <!-- Card -->
+        <div class="card">
+            <h2>Enter coefficients</h2>
+            <div class="input-group">
+                <label>a</label> 
+                <input type="number" id="a" step="any" value="1" oninput="updateLivePreview()">
+                <label>b</label> 
+                <input type="number" id="b" step="any" value="-4" oninput="updateLivePreview()">
+                <label>c</label> 
+                <input type="number" id="c" step="any" value="3" oninput="updateLivePreview()">
+            </div>
+
+            <!-- 1️⃣ لائیو ایکویشن (Live Equation) اور 2️⃣ فارمولا (Formula) -->
+            <div class="display-area">
+                <div class="equation-box" id="equationDisplay">x² − 4x + 3 = 0</div>
+                <div class="formula-box" id="formulaDisplay">
+                    x = <span>(-(-4) ± √((-4)² − 4(1)(3))) / 2(1)</span>
+                </div>
+            </div>
+
+            <button class="btn-solve" onclick="solveEquation()">✨ Solve (Calculate Roots)</button>
+
+            <div class="result-box" id="resultDisplay">✅ x₁ = 3.00 , x₂ = 1.00</div>
         </div>
 
-        <div class="equation-box" id="equationDisplay">x² - 4x + 3 = 0</div>
+        <!-- Graph -->
+        <div class="graph-wrapper">
+            <h3>📈 Parabola Graph</h3>
+            <canvas id="graphCanvas" width="420" height="300"></canvas>
+            <p style="font-size:13px; color:#888; margin-top:12px;">🔴 Red &amp; 🔵 Blue dots are the roots (x₁, x₂)</p>
+        </div>
 
-        <button onclick="solveEquation()">✨ Solve</button>
-
-        <div class="result-box" id="resultDisplay">x₁ = 3.00 , x₂ = 1.00</div>
     </div>
+</section>
 
-    <!-- دائیں طرف: گراف (Diagram) -->
-    <div class="card right">
-        <h3>📈 Parabola Graph</h3>
-        <canvas id="graphCanvas" width="300" height="300"></canvas>
-        <p style="font-size:12px; color:#666; margin:5px 0 0;">Red & Blue dots are the roots (x₁, x₂)</p>
+<!-- ===== ABOUT ===== -->
+<section id="about" class="container" style="background:#f8faff; border-radius:40px; padding:50px 20px;">
+    <h2 class="section-title"><span>🧠 How It Works</span></h2>
+    <div class="about-grid">
+        <div class="about-card">
+            <h3>📥 Input</h3>
+            <p>Enter the coefficients <strong>a</strong>, <strong>b</strong>, and <strong>c</strong>.</p>
+        </div>
+        <div class="about-card">
+            <h3>⚡ Calculate</h3>
+            <p>Computes the <strong>Discriminant</strong> (D = b² − 4ac) and uses the Quadratic Formula.</p>
+        </div>
+        <div class="about-card">
+            <h3>📊 Visualize</h3>
+            <p>Plots the <strong>Parabola</strong> and marks the exact roots on the X‑axis.</p>
+        </div>
     </div>
+</section>
 
-</div>
+<!-- ===== FOOTER ===== -->
+<footer>
+    <p>© 2026 <strong>MathStudio</strong> — Built with ❤️ by <strong>Zainab Qureshi</strong></p>
+    <p style="font-size:14px; margin-top:6px;">
+        🌐 <a href="https://comfy-sorbet-e3ed69.netlify.app" target="_blank">Live Demo</a> &nbsp;|&nbsp;
+        💻 <a href="https://github.com/zainabqureshizainabqureshi019/Quadratic_Solver" target="_blank">GitHub</a>
+    </p>
+</footer>
 
+<!-- ===== JAVASCRIPT ===== -->
 <script>
-// یہ فنکشن solve بٹن دبانے پر چلے گا
-function solveEquation() {
-    // 1. اعداد پڑھیں
-    let a = parseFloat(document.getElementById('a').value);
-    let b = parseFloat(document.getElementById('b').value);
-    let c = parseFloat(document.getElementById('c').value);
+    // یہ فنکشن ہر بار چلے گا جب آپ a, b, یا c میں کوئی تبدیلی کریں گی
+    function updateLivePreview() {
+        let a = parseFloat(document.getElementById('a').value);
+        let b = parseFloat(document.getElementById('b').value);
+        let c = parseFloat(document.getElementById('c').value);
 
-    // 2. چیک کریں
-    if (isNaN(a) || isNaN(b) || isNaN(c)) {
-        document.getElementById('resultDisplay').innerText = "❌ Please enter valid numbers!";
-        document.getElementById('equationDisplay').innerText = "Invalid Input";
-        drawGraph(0, 0, 0);
-        return;
-    }
-    if (a === 0) {
-        document.getElementById('resultDisplay').innerText = "❌ 'a' cannot be zero!";
-        document.getElementById('equationDisplay').innerText = "Not a quadratic";
-        drawGraph(0, 0, 0);
-        return;
-    }
+        // اگر کوئی عدد نہیں ہے (خالی خانہ) تو اسے 0 یا خالی سمجھیں
+        if (isNaN(a)) a = 0;
+        if (isNaN(b)) b = 0;
+        if (isNaN(c)) c = 0;
 
-    // 3. مساوات کو خوبصورت بنائیں (مثال: 1x² - 4x + 3 = 0)
-    let eq = "";
-    if (a === 1) eq = "x²";
-    else if (a === -1) eq = "-x²";
-    else eq = a + "x²";
-
-    if (b > 0) eq += " + " + b + "x";
-    else if (b < 0) eq += " - " + Math.abs(b) + "x";
-
-    if (c > 0) eq += " + " + c;
-    else if (c < 0) eq += " - " + Math.abs(c);
-    eq += " = 0";
-    document.getElementById('equationDisplay').innerText = eq;
-
-    // 4. ریاضی حل کریں (ڈسکریمیننٹ)
-    let d = (b * b) - (4 * a * c);
-    let resultText = "";
-
-    if (d < 0) {
-        resultText = "❌ No Real Roots (D = " + d + ")";
-    } else if (d === 0) {
-        let x = (-b) / (2 * a);
-        resultText = "✅ Double Root: x = " + x.toFixed(2);
-    } else {
-        let sqrtD = Math.sqrt(d);
-        let x1 = (-b + sqrtD) / (2 * a);
-        let x2 = (-b - sqrtD) / (2 * a);
-        resultText = "✅ x₁ = " + x1.toFixed(2) + " , x₂ = " + x2.toFixed(2);
-    }
-    document.getElementById('resultDisplay').innerText = resultText;
-
-    // 5. گراف بنائیں
-    drawGraph(a, b, c);
-}
-
-// یہ فنکشن کینوس (Canvas) پر گراف بناتا ہے
-function drawGraph(a, b, c) {
-    let canvas = document.getElementById('graphCanvas');
-    let ctx = canvas.getContext('2d');
-    let W = 300, H = 300;
-    ctx.clearRect(0, 0, W, H);
-
-    // پس منظر
-    ctx.fillStyle = "#f8f9fc";
-    ctx.fillRect(0, 0, W, H);
-
-    let scale = 25; // 1 عدد = 25 پکسل
-    let cx = W / 2; // مرکز X
-    let cy = H / 2; // مرکز Y
-
-    // گرڈ لائنیں (Grid lines)
-    ctx.strokeStyle = "#d1d5db";
-    ctx.lineWidth = 1;
-    for (let i = -6; i <= 6; i++) {
-        if (i === 0) continue;
-        // عمودی (Vertical)
-        let xPos = cx + i * scale;
-        ctx.beginPath();
-        ctx.moveTo(xPos, 0);
-        ctx.lineTo(xPos, H);
-        ctx.stroke();
-        // افقی (Horizontal)
-        let yPos = cy - i * scale;
-        ctx.beginPath();
-        ctx.moveTo(0, yPos);
-        ctx.lineTo(W, yPos);
-        ctx.stroke();
-    }
-
-    // مرکزی محور (Axes)
-    ctx.strokeStyle = "#2c3e50";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(0, cy);
-    ctx.lineTo(W, cy);
-    ctx.moveTo(cx, 0);
-    ctx.lineTo(cx, H);
-    ctx.stroke();
-
-    // O, X, Y کے لیبل
-    ctx.fillStyle = "#2c3e50";
-    ctx.font = "12px Arial";
-    ctx.fillText("O", cx + 6, cy - 6);
-    ctx.fillText("x", W - 15, cy - 8);
-    ctx.fillText("y", cx + 8, 15);
-
-    // اگر a=0 اور b=0 اور c=0 ہے تو کوئی گراف نہ بنے
-    if (a === 0 && b === 0 && c === 0) {
-        ctx.fillStyle = "#888";
-        ctx.font = "14px Arial";
-        ctx.fillText("No Data", 120, 160);
-        return;
-    }
-
-    // پیرابولا (Curve) بنائیں
-    ctx.strokeStyle = "#2c3e50";
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    let firstPoint = true;
-    for (let x = -6.5; x <= 6.5; x += 0.05) {
-        let y = a * x * x + b * x + c;
-        let sx = cx + x * scale;
-        let sy = cy - y * scale;
-
-        // اگر گراف بہت اوپر یا نیچے چلا جائے تو اسے روکیں
-        if (sy < -100 || sy > 400) {
-            firstPoint = true;
-            continue;
-        }
-        if (firstPoint) {
-            ctx.moveTo(sx, sy);
-            firstPoint = false;
+        // ---------- 1. مساوات (Equation) کو اپ ڈیٹ کریں ----------
+        let eq = "";
+        if (a === 0 && b === 0 && c === 0) {
+            eq = "0 = 0";
         } else {
-            ctx.lineTo(sx, sy);
+            // a کا حصہ
+            if (a === 1) eq = "x²";
+            else if (a === -1) eq = "−x²";
+            else if (a !== 0) eq = a + "x²";
+            
+            // b کا حصہ
+            if (b > 0 && eq !== "") eq += " + " + b + "x";
+            else if (b < 0 && eq !== "") eq += " − " + Math.abs(b) + "x";
+            else if (b !== 0 && eq === "") eq = b + "x"; // اگر a=0 ہو تو صرف bx
+            else if (b === 0) { /* کچھ نہ کریں */ }
+
+            // c کا حصہ
+            if (c > 0 && eq !== "") eq += " + " + c;
+            else if (c < 0 && eq !== "") eq += " − " + Math.abs(c);
+            else if (c !== 0 && eq === "") eq = c; // اگر a=0 اور b=0 ہو تو صرف c
         }
+        eq += " = 0";
+        document.getElementById('equationDisplay').innerText = eq;
+
+        // ---------- 2. کواڈریٹک فارمولا (Formula) کو اپ ڈیٹ کریں ----------
+        let formulaText = "";
+        if (a === 0) {
+            formulaText = "⚠️ 'a' cannot be zero for quadratic formula";
+        } else {
+            // نمبرز کو فارمولے میں ڈالیں
+            let bDisplay = (b < 0) ? `(${b})` : b;
+            let aDisplay = (a < 0) ? `(${a})` : a;
+            let cDisplay = (c < 0) ? `(${c})` : c;
+            
+            // b² - 4ac کی ویلیو نکال کر دکھائیں (اسے حل کیے بغیر)
+            let discriminant = (b * b) - (4 * a * c);
+            
+            // مکمل فارمولا: x = (-b ± √(b² - 4ac)) / 2a
+            // اس میں اعداد ڈال کر دکھائیں
+            formulaText = `x = (-(${b}) ± √((${b})² − 4(${a})(${c}))) / 2(${a})`;
+            
+            // چھوٹا سا اضافہ: ڈسکریمیننٹ کی ویلیو بھی دکھائیں
+            formulaText += `  |  D = ${discriminant}`;
+        }
+        document.getElementById('formulaDisplay').innerHTML = `x = <span>${formulaText}</span>`;
     }
-    ctx.stroke();
 
-    // جڑوں (Roots) کو گراف پر دکھائیں
-    let d = (b * b) - (4 * a * c);
-    if (a !== 0 && d >= 0) {
-        let sqrtD = Math.sqrt(d);
-        let x1 = (-b + sqrtD) / (2 * a);
-        let x2 = (-b - sqrtD) / (2 * a);
+    // یہ فنکشن Solve بٹن دبانے پر چلے گا (اصل حساب اور گراف)
+    function solveEquation() {
+        let a = parseFloat(document.getElementById('a').value);
+        let b = parseFloat(document.getElementById('b').value);
+        let c = parseFloat(document.getElementById('c').value);
 
-        // x1 کے لیے سرخ نقطہ
-        let sx1 = cx + x1 * scale;
-        if (sx1 > 10 && sx1 < W - 10) {
-            ctx.shadowColor = "white";
-            ctx.shadowBlur = 6;
-            ctx.fillStyle = "#e74c3c";
-            ctx.beginPath();
-            ctx.arc(sx1, cy, 6, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            ctx.fillStyle = "#e74c3c";
-            ctx.font = "bold 13px Arial";
-            ctx.fillText("x₁", sx1 - 12, cy - 15);
+        if (isNaN(a) || isNaN(b) || isNaN(c)) {
+            document.getElementById('resultDisplay').innerText = "❌ Please enter valid numbers!";
+            drawGraph(0, 0, 0);
+            return;
+        }
+        if (a === 0) {
+            document.getElementById('resultDisplay').innerText = "❌ 'a' cannot be zero!";
+            drawGraph(0, 0, 0);
+            return;
         }
 
-        // x2 کے لیے نیلا نقطہ
-        if (Math.abs(x1 - x2) > 0.01) {
-            let sx2 = cx + x2 * scale;
-            if (sx2 > 10 && sx2 < W - 10) {
+        // پہلے سے موجود updateLivePreview کو چلا دیں تاکہ فارمولا تازہ ہو
+        updateLivePreview();
+
+        // ڈسکریمیننٹ اور جواب
+        let d = (b * b) - (4 * a * c);
+        let resultText = "";
+
+        if (d < 0) {
+            resultText = "❌ No Real Roots (D = " + d + ")";
+        } else if (d === 0) {
+            let x = (-b) / (2 * a);
+            resultText = "✅ Double Root: x = " + x.toFixed(2);
+        } else {
+            let sqrtD = Math.sqrt(d);
+            let x1 = (-b + sqrtD) / (2 * a);
+            let x2 = (-b - sqrtD) / (2 * a);
+            resultText = "✅ x₁ = " + x1.toFixed(2) + " , x₂ = " + x2.toFixed(2);
+        }
+        document.getElementById('resultDisplay').innerText = resultText;
+
+        drawGraph(a, b, c);
+    }
+
+    // گراف بنانے کا فنکشن (پہلے جیسا ہی ہے)
+    function drawGraph(a, b, c) {
+        let canvas = document.getElementById('graphCanvas');
+        let ctx = canvas.getContext('2d');
+        let W = canvas.width;
+        let H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        ctx.fillStyle = "#fafbfc";
+        ctx.fillRect(0, 0, W, H);
+
+        let scale = 30;
+        let cx = W / 2;
+        let cy = H / 2;
+
+        ctx.strokeStyle = "#e0e4eb";
+        ctx.lineWidth = 0.8;
+        for (let i = -8; i <= 8; i++) {
+            if (i === 0) continue;
+            let pos = cx + i * scale;
+            ctx.beginPath();
+            ctx.moveTo(pos, 0);
+            ctx.lineTo(pos, H);
+            ctx.stroke();
+            let posY = cy - i * scale;
+            ctx.beginPath();
+            ctx.moveTo(0, posY);
+            ctx.lineTo(W, posY);
+            ctx.stroke();
+        }
+
+        ctx.strokeStyle = "#1e1e2f";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, cy);
+        ctx.lineTo(W, cy);
+        ctx.moveTo(cx, 0);
+        ctx.lineTo(cx, H);
+        ctx.stroke();
+
+        ctx.fillStyle = "#1e1e2f";
+        ctx.font = "13px Arial";
+        ctx.fillText("O", cx + 6, cy - 6);
+        ctx.fillText("x", W - 18, cy - 10);
+        ctx.fillText("y", cx + 10, 18);
+
+        if (a === 0 && b === 0 && c === 0) {
+            ctx.fillStyle = "#aaa";
+            ctx.font = "16px Arial";
+            ctx.fillText("No Data", 160, 160);
+            return;
+        }
+
+        ctx.strokeStyle = "#6c63ff";
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        let firstPoint = true;
+        for (let x = -8; x <= 8; x += 0.05) {
+            let y = a * x * x + b * x + c;
+            let sx = cx + x * scale;
+            let sy = cy - y * scale;
+            if (sy < -200 || sy > 500) {
+                firstPoint = true;
+                continue;
+            }
+            if (firstPoint) {
+                ctx.moveTo(sx, sy);
+                firstPoint = false;
+            } else {
+                ctx.lineTo(sx, sy);
+            }
+        }
+        ctx.stroke();
+
+        let d = (b * b) - (4 * a * c);
+        if (a !== 0 && d >= 0) {
+            let sqrtD = Math.sqrt(d);
+            let x1 = (-b + sqrtD) / (2 * a);
+            let x2 = (-b - sqrtD) / (2 * a);
+
+            let sx1 = cx + x1 * scale;
+            if (sx1 > 10 && sx1 < W - 10) {
                 ctx.shadowColor = "white";
                 ctx.shadowBlur = 6;
-                ctx.fillStyle = "#2980b9";
+                ctx.fillStyle = "#e74c3c";
                 ctx.beginPath();
-                ctx.arc(sx2, cy, 6, 0, 2 * Math.PI);
+                ctx.arc(sx1, cy, 7, 0, 2 * Math.PI);
                 ctx.fill();
                 ctx.shadowBlur = 0;
-                ctx.fillStyle = "#2980b9";
-                ctx.font = "bold 13px Arial";
-                ctx.fillText("x₂", sx2 - 12, cy - 15);
+                ctx.fillStyle = "#e74c3c";
+                ctx.font = "bold 14px Arial";
+                ctx.fillText("x₁", sx1 - 14, cy - 18);
+            }
+
+            if (Math.abs(x1 - x2) > 0.01) {
+                let sx2 = cx + x2 * scale;
+                if (sx2 > 10 && sx2 < W - 10) {
+                    ctx.shadowColor = "white";
+                    ctx.shadowBlur = 6;
+                    ctx.fillStyle = "#3498db";
+                    ctx.beginPath();
+                    ctx.arc(sx2, cy, 7, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                    ctx.fillStyle = "#3498db";
+                    ctx.font = "bold 14px Arial";
+                    ctx.fillText("x₂", sx2 - 14, cy - 18);
+                }
             }
         }
     }
-}
 
-// جب صفحہ پہلی بار لوڈ ہو تو ڈیفالٹ گراف دکھائیں (a=1, b=-4, c=3)
-window.onload = function() {
-    // پہلے سے ڈیفالٹ ویلیوز سیٹ ہیں، بس solve کال کریں
-    solveEquation();
-};
+    // جب صفحہ لوڈ ہو تو ڈیفالٹ ویلیوز سیٹ کریں
+    window.onload = function() {
+        document.getElementById('a').value = 1;
+        document.getElementById('b').value = -4;
+        document.getElementById('c').value = 3;
+        updateLivePreview();  // پہلے سے مساوات اور فارمولا دکھائیں
+        solveEquation();      // گراف اور جواب دکھائیں
+    };
 </script>
-
 </body>
 </html>
